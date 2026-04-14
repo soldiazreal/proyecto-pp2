@@ -1,0 +1,17 @@
+### Probar el GET de pedidos
+GET http://localhost:3000/pedidos
+
+###
+
+### Probar el POST (Hacer un pedido)
+POST http://localhost:3000/pedidos
+Content-Type: application/json
+
+{
+    "mesa": 10,
+    "producto": "Empanadas",
+    "cantidad": 3
+}
+
+### Consultar el stock disponible
+GET http://localhost:3000/pedidos/stock
