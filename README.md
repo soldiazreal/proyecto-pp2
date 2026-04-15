@@ -7,7 +7,7 @@ Este proyecto es una aplicación diseñada para automatizar la toma de pedidos y
 
 ## 🚀 Funcionalidades Principales
 
-El sistema se basa en tres pilares fundamentales:
+El sistema se basa en cuatro pilares fundamentales:
 
 1. **Gestión de Comandas:** Interfaz dinámica para registrar nuevos pedidos, permitiendo seleccionar productos y cantidades.
 2. **Control de Stock:** Revisión de comidas disponibles a pedir.
