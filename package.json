@@ -1,0 +1,24 @@
+{
+  "name": "proyecto-pp2",
+  "version": "1.0.0",
+  "description": "Este proyecto es una aplicación diseñada para automatizar la toma de pedidos y la administración de cuentas en un entorno gastronómico. El objetivo es centralizar la operación desde que el cliente elige un plato hasta que se liquida la cuenta.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soldiazreal/proyecto-pp2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/soldiazreal/proyecto-pp2/issues"
+  },
+  "homepage": "https://github.com/soldiazreal/proyecto-pp2#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
