@@ -46,6 +46,6 @@ Grupo Cool 😎 (PPII)
 - Sol Díaz Real [@soldiazreal](https://github.com/soldiazreal)
 - Guillermo Romagnoli [@Romitel](https://github.com/Romitel)
 - Analía Laura Vazquez [@AnaliaLauraVazquez](https://github.com/AnaliaLauraVazquez)
-- Leandro Lambardi [@leandrolambardi](https://github.com/leandrolambardi)
+- Leandro Martín Lambardi [@leandrolambardi](https://github.com/leandrolambardi)
   
 /** ------------- Haciendo un commit --------------*/
