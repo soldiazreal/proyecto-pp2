@@ -1,5 +1,5 @@
-const request = require("supertest");
-const app = require("../../app");
+import request from "supertest";
+import app from "../../app";
 
 describe("GET /pedidos", () => {
     it("devuelve la lista de pedidos", async () => {
@@ -36,7 +36,7 @@ describe("GET /pedidos", () => {
 describe("POST /pedidos", () => {
     it("crea un pedido con un producto y guarda el precio del menú", async () => {
         const menuRes = await request(app).get("/pedidos/stock");
-        const precioEnMenu = menuRes.body.find((p) => p.producto === "Cerveza").precio;
+        const precioEnMenu = menuRes.body.find((p: { producto: string }) => p.producto === "Cerveza").precio;
 
         const res = await request(app)
             .post("/pedidos")
@@ -67,8 +67,8 @@ describe("POST /pedidos", () => {
             .send({
                 mesa: 12,
                 productos: [
-                    { nombre: "Empanadas", cantidad: 2 },  // 800 * 2 = 1600
-                    { nombre: "Cerveza",   cantidad: 3 },  // 600 * 3 = 1800
+                    { nombre: "Empanadas", cantidad: 2 }, // 800 * 2 = 1600
+                    { nombre: "Cerveza",   cantidad: 3 }, // 600 * 3 = 1800
                 ],
             });
 
@@ -77,29 +77,26 @@ describe("POST /pedidos", () => {
     });
 
     it("el precio se guarda en el pedido aunque el menú cambie", async () => {
-        // Crear el pedido y verificar que el precio quedó guardado en el pedido
         const res = await request(app)
             .post("/pedidos")
             .send({ mesa: 13, productos: [{ nombre: "Pizza Cool", cantidad: 1 }] });
 
         expect(res.status).toBe(201);
         const precioGuardado = res.body.pedido.productos[0].precio;
-
-        // El precio en el pedido debe ser un número fijo, no derivado del menú en el momento de consulta
         expect(typeof precioGuardado).toBe("number");
         expect(precioGuardado).toBe(1500);
     });
 
     it("descuenta el stock al crear el pedido", async () => {
         const stockAntes = await request(app).get("/pedidos/stock");
-        const hamburguesa = stockAntes.body.find((p) => p.producto === "Hamburguesa");
+        const hamburguesa = stockAntes.body.find((p: { producto: string }) => p.producto === "Hamburguesa");
 
         await request(app)
             .post("/pedidos")
             .send({ mesa: 14, productos: [{ nombre: "Hamburguesa", cantidad: 1 }] });
 
         const stockDespues = await request(app).get("/pedidos/stock");
-        const hamburguesaDespues = stockDespues.body.find((p) => p.producto === "Hamburguesa");
+        const hamburguesaDespues = stockDespues.body.find((p: { producto: string }) => p.producto === "Hamburguesa");
 
         expect(hamburguesaDespues.stock).toBe(hamburguesa.stock - 1);
     });
@@ -150,7 +147,7 @@ describe("POST /pedidos", () => {
 
     it("no descuenta stock si un producto del pedido no existe", async () => {
         const stockAntes = await request(app).get("/pedidos/stock");
-        const empanadasAntes = stockAntes.body.find((p) => p.producto === "Empanadas").stock;
+        const empanadasAntes = stockAntes.body.find((p: { producto: string }) => p.producto === "Empanadas").stock;
 
         await request(app)
             .post("/pedidos")
@@ -163,7 +160,7 @@ describe("POST /pedidos", () => {
             });
 
         const stockDespues = await request(app).get("/pedidos/stock");
-        const empanadasDespues = stockDespues.body.find((p) => p.producto === "Empanadas").stock;
+        const empanadasDespues = stockDespues.body.find((p: { producto: string }) => p.producto === "Empanadas").stock;
 
         expect(empanadasDespues).toBe(empanadasAntes);
     });
@@ -172,7 +169,7 @@ describe("POST /pedidos", () => {
 describe("DELETE /pedidos/:id/productos/:nombre", () => {
     it("elimina un producto del pedido y devuelve el stock", async () => {
         const stockAntes = await request(app).get("/pedidos/stock");
-        const pizzaAntes = stockAntes.body.find((p) => p.producto === "Pizza Cool").stock;
+        const pizzaAntes = stockAntes.body.find((p: { producto: string }) => p.producto === "Pizza Cool").stock;
 
         const res = await request(app).delete("/pedidos/1/productos/Pizza Cool");
 
@@ -180,20 +177,19 @@ describe("DELETE /pedidos/:id/productos/:nombre", () => {
         expect(res.body).toHaveProperty("mensaje");
 
         const stockDespues = await request(app).get("/pedidos/stock");
-        const pizzaDespues = stockDespues.body.find((p) => p.producto === "Pizza Cool").stock;
+        const pizzaDespues = stockDespues.body.find((p: { producto: string }) => p.producto === "Pizza Cool").stock;
 
         expect(pizzaDespues).toBeGreaterThan(pizzaAntes);
     });
 
     it("recalcula el total al eliminar un producto", async () => {
-        // Crear pedido con dos productos para poder eliminar uno y verificar el total
         const crearRes = await request(app)
             .post("/pedidos")
             .send({
                 mesa: 20,
                 productos: [
-                    { nombre: "Empanadas", cantidad: 2 },  // 800 * 2 = 1600
-                    { nombre: "Cerveza",   cantidad: 1 },  // 600 * 1 = 600
+                    { nombre: "Empanadas", cantidad: 2 }, // 800 * 2 = 1600
+                    { nombre: "Cerveza",   cantidad: 1 }, // 600 * 1 = 600
                 ],
             });
 
@@ -212,21 +208,19 @@ describe("DELETE /pedidos/:id/productos/:nombre", () => {
     });
 
     it("devuelve 404 si el producto no está en el pedido", async () => {
-        // Pedido 4 tiene solo Hamburguesa; Pizza Cool no está en él
         const res = await request(app).delete("/pedidos/4/productos/Pizza Cool");
         expect(res.status).toBe(404);
         expect(res.body.error).toMatch(/producto/i);
     });
 
     it("elimina el pedido si queda sin productos", async () => {
-        // El pedido 2 tiene solo Cerveza
         const res = await request(app).delete("/pedidos/2/productos/Cerveza");
 
         expect(res.status).toBe(200);
         expect(res.body.mensaje).toMatch(/eliminado/i);
 
         const pedidos = await request(app).get("/pedidos");
-        const pedido2 = pedidos.body.find((p) => p.id === 2);
+        const pedido2 = pedidos.body.find((p: { id: number }) => p.id === 2);
         expect(pedido2).toBeUndefined();
     });
 });
