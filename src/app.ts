@@ -1,13 +1,15 @@
 import express from "express";
 import dotenv from "dotenv";
+import morgan from "morgan";
 import router from "./routes/pedidos.routes";
 
 dotenv.config();
 const app = express();
 
 app.use(express.json());
+app.use(morgan("dev"));
 
-app.use("/pedidos", router);
+app.use("/app", router);
 
 app.get("/", (req, res) => {
   res.send("Servidor del grupo cool funcionando!");

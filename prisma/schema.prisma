@@ -5,7 +5,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  //output   = "../src/generated/prisma"
+  //output   = "../src/generated"
 }
 
 datasource db {
@@ -17,7 +17,7 @@ datasource db {
 model Salon {
   id        Int      @id @default(autoincrement())
   nombre    String
-  mesas     Mesa[]
+  //mesas     Mesa[]
   createdAt DateTime @default(now())
 }
 
@@ -27,7 +27,7 @@ model Mesa {
   capacidad Int?
   estado   String @default("Disponible")
   salonId  Int
-  salon    Salon  @relation(fields: [salonId], references: [id])
+  //salon    Salon?  @relation(fields: [salonId], references: [id])
   pedidos  Pedido[]
 }
 
