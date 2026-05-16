@@ -4,7 +4,8 @@
   "description": "Este proyecto es una aplicación diseñada para automatizar la toma de pedidos y la administración de cuentas en un entorno gastronómico. El objetivo es centralizar la operación desde que el cliente elige un plato hasta que se liquida la cuenta.",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts"
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "dev:api": "nodemon --exec ts-node src/index.ts --api"
   },
   "repository": {
     "type": "git",
