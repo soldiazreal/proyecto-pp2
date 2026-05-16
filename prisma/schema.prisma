@@ -14,6 +14,13 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+//model User {
+//  id    Int     @id @default(autoincrement())
+//  email String  @unique
+//  name  String?
+//  password String
+//}
+
 model Salon {
   id        Int      @id @default(autoincrement())
   nombre    String
@@ -39,4 +46,12 @@ model Pedido {
   total     Float
   estado    String   @default("Pendiente")
   createdAt DateTime @default(now())
+}
+
+model Plato {
+  id Int @id @default(autoincrement())
+  codigo Int
+  nombre String
+  descripcion String
+  precio Int
 }
