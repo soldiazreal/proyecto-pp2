@@ -29,12 +29,20 @@ model Salon {
 }
 
 model Mesa {
-  id       Int    @id @default(autoincrement())
-  numero   Int
-  capacidad Int?
-  estado   String @default("Disponible")
-  salonId  Int
-  //salon    Salon?  @relation(fields: [salonId], references: [id])
+  id                Int       @id @default(autoincrement())
+  numero            Int
+  capacidad         Int?
+  estado            String    @default("Disponible")
+  salonId           Int
+  clientesActuales  Int       @default(0)
+  meseroAsignado    String?
+  horaOcupacion     DateTime?
+  duracionEstimada  Int?
+  consumoActual     Float     @default(0)
+  fechaCreacion     DateTime  @default(now())
+  fechaModificacion DateTime  @updatedAt
+
+  salon    Salon?   @relation(fields: [salonId], references: [id])
   pedidos  Pedido[]
 }
 
