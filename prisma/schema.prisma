@@ -14,52 +14,143 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-//model User {
-//  id    Int     @id @default(autoincrement())
-//  email String  @unique
-//  name  String?
-//  password String
-//}
+enum RolUsuario {
+  ADMIN
+  GERENTE
+  MESERO
+  COCINERO
+  CAJA
+}
+
+model User {
+  id                Int        @id @default(autoincrement())
+  nombre            String
+  apellido          String
+  email             String     @unique
+  telefono          String?
+  rol               RolUsuario
+  activo            Boolean    @default(true)
+  salonAsignado     String? //para meseros y cocineros
+  fechaCreacion     DateTime   @default(now())
+  fechaModificacion DateTime   @default(now()) @updatedAt
+  password          String
+}
 
 model Salon {
-  id        Int      @id @default(autoincrement())
-  nombre    String
-  //mesas     Mesa[]
-  createdAt DateTime @default(now())
+  id                Int      @id @default(autoincrement())
+  nombre            String
+  descripcion       String?
+  capacidad         Int
+  habilitado        Boolean  @default(true)
+  mesas             Mesa[]
+  fechaCreacion     DateTime @default(now())
+  fechaModificacion DateTime @default(now()) @updatedAt
+  Ordenes           Orden[]
+}
+
+enum EstadoMesa {
+  DISPONIBLE
+  OCUPADA
+  RESERVADA
+  MANTENIMIENTO
 }
 
 model Mesa {
-  id                Int       @id @default(autoincrement())
-  numero            Int
-  capacidad         Int?
-  estado            String    @default("Disponible")
+  id                Int        @id @default(autoincrement())
   salonId           Int
-  clientesActuales  Int       @default(0)
+  numero            Int //numero de mesa
+  capacidad         Int?
+  estado            EstadoMesa @default(DISPONIBLE)
+  clientesActuales  Int?       @default(0)
   meseroAsignado    String?
   horaOcupacion     DateTime?
-  duracionEstimada  Int?
-  consumoActual     Float     @default(0)
-  fechaCreacion     DateTime  @default(now())
-  fechaModificacion DateTime  @updatedAt
-
-  salon    Salon?   @relation(fields: [salonId], references: [id])
-  pedidos  Pedido[]
+  duracionEstimada  Int? // en minutos
+  consumoActual     Float      @default(0) // total actual
+  fechaCreacion     DateTime   @default(now())
+  fechaModificacion DateTime   @default(now()) @updatedAt
+  pedidos           Pedido[]
+  salon             Salon      @relation(fields: [salonId], references: [id])
 }
 
 model Pedido {
   id        Int      @id @default(autoincrement())
-  mesa      Mesa     @relation(fields: [mesaId], references: [id])
   mesaId    Int
   productos Json
   total     Float
   estado    String   @default("Pendiente")
   createdAt DateTime @default(now())
+  mesa      Mesa     @relation(fields: [mesaId], references: [id])
+}
+
+enum CategoriaPlato {
+  ENTRADA
+  PLATO_FUERTE
+  POSTRE
+  BEBIDA
+  SNACK
 }
 
 model Plato {
-  id Int @id @default(autoincrement())
-  codigo Int
-  nombre String
-  descripcion String
-  precio Int
+  id                Int            @id @default(autoincrement())
+  codigo            String? // codigo interno de cocina PZ001 BEB12
+  nombre            String
+  descripcion       String
+  categoria         CategoriaPlato
+  precio            Float
+  disponible        Boolean        @default(true)
+  tiempoPreparacion Int // en minutos
+  imagenUrl         String?
+  ingredientes      String[]
+  calorias          Int?
+  alergenos         String[]       @default([])
+  fechaCreacion     DateTime       @default(now())
+  fechaModificacion DateTime       @default(now()) @updatedAt
+  itemOrden         ItemOrden[]
+}
+
+enum EstadoOrden {
+  PENDIENTE
+  PREPARACION
+  LISTA
+  ENTREGADA
+  CANCELADA
+}
+
+enum EstadoPago {
+  PENDIENTE
+  PARCIAL
+  PAGADO
+  ANULADO
+}
+
+model ItemOrden {
+  id        Int         @id @default(autoincrement())
+  platoId   Int
+  ordenId   Int
+  cantidad  Int
+  precio    Float // precio unitario
+  subtotal  Float
+  notas     String?
+  horaOrden DateTime    @default(now())
+  estado    EstadoOrden
+
+  plato Plato @relation(fields: [platoId], references: [id])
+  orden Orden @relation(fields: [ordenId], references: [id])
+}
+
+model Orden {
+  id               Int         @id @default(autoincrement())
+  items            ItemOrden[]
+  mesaId           Int
+  salonId          Int
+  subtotal         Int
+  descuento        Int?
+  impuesto         Int?
+  total            Int
+  estadoPago       EstadoPago  @default(PENDIENTE)
+  meseroId         String? // ver
+  horaInicio       DateTime    @default(now())
+  horaFinalizacion DateTime? //cuando recien se crea la orden
+  observaciones    String?
+  salon            Salon       @relation(fields: [salonId], references: [id])
 }

@@ -8,7 +8,9 @@ export class MesaController {
       const mesa = await MesaService.createMesa({
         numero: Number(numero),
         capacidad: Number(capacidad),
-        salonId: Number(salonId),
+        salon:{
+          connect:{id:Number(salonId)},
+        },
       });
       res.status(201).json(mesa);
     } catch (error) {
@@ -41,7 +43,9 @@ export class MesaController {
       const mesa = await MesaService.updateMesa(Number(req.params.id), {
         numero: Number(numero),
         capacidad: Number(capacidad),
-        salonId: Number(salonId),
+        salon: {
+          connect:{id:Number(salonId)},
+        },
       });
       res.json(mesa);
     } catch (error) {
