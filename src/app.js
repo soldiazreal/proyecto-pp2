@@ -1,16 +1,21 @@
 const express = require('express');
+const cors = require('cors');
 
 const app = express();
 const port = 3000;
 
-const pedidosRoutes = require('./routes/pedidos.routes');
+// ROUTES
+const pedidosRoutes = require('./routes/pedidos');
 
+app.use(cors());
 app.use(express.json());
 
+// rutas
 app.use('/pedidos', pedidosRoutes);
 
+// test
 app.get('/', (req, res) => {
-  res.send('Servidor funcionando');
+  res.send('API funcionando');
 });
 
 app.listen(port, () => {
