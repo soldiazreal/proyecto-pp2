@@ -21,19 +21,11 @@ datasource db {
 //  password String
 //}
 
-model Salon {
-  id        Int      @id @default(autoincrement())
-  nombre    String
-  mesas     Mesa[]
-  createdAt DateTime @default(now())
-}
-
 model Mesa {
   id                Int       @id @default(autoincrement())
   numero            Int
   capacidad         Int?
   estado            String    @default("Disponible")
-  salonId           Int
   clientesActuales  Int       @default(0)
   meseroAsignado    String?
   horaOcupacion     DateTime?
@@ -42,7 +34,6 @@ model Mesa {
   fechaCreacion     DateTime  @default(now())
   fechaModificacion DateTime  @updatedAt
 
-  salon    Salon?   @relation(fields: [salonId], references: [id])
   pedidos  Pedido[]
 }
 
@@ -50,8 +41,8 @@ model Pedido {
   id        Int      @id @default(autoincrement())
   mesa      Mesa     @relation(fields: [mesaId], references: [id])
   mesaId    Int
-  productos Json
-  total     Float
+  plato     Plato    @relation(fields: [platoId], references: [id])
+  platoId   Int
   estado    String   @default("Pendiente")
   createdAt DateTime @default(now())
 }
@@ -62,4 +53,6 @@ model Plato {
   nombre String
   descripcion String
   precio Int
+
+  pedidos Pedido[]
 }

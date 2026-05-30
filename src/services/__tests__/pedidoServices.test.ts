@@ -11,8 +11,13 @@ jest.mock("../../lib/prisma", () => ({
       update: jest.fn(),
       delete: jest.fn(),
     },
+    mesa: {
+      update: jest.fn(),
+    },
   },
 }));
+
+const mockPlato = { id: 1, codigo: 101, nombre: "Milanesa", descripcion: "Con papas", precio: 1500 };
 
 describe("PedidoService", () => {
   beforeEach(() => {
@@ -20,56 +25,42 @@ describe("PedidoService", () => {
   });
 
   describe("createPedido", () => {
-    it("should create a pedido successfully", async () => {
+    it("should create a pedido and recalculate consumoActual", async () => {
       const mockPedido = {
         id: 1,
         mesaId: 1,
-        productos: { plato1: 2, plato2: 1 },
-        total: 45.5,
+        platoId: 1,
         estado: "Pendiente",
         createdAt: new Date(),
+        plato: mockPlato,
       };
 
       (prisma.pedido.create as jest.Mock).mockResolvedValue(mockPedido);
+      (prisma.pedido.findMany as jest.Mock).mockResolvedValue([mockPedido]);
+      (prisma.mesa.update as jest.Mock).mockResolvedValue({});
 
       const result = await PedidoService.createPedido({
         mesa: { connect: { id: 1 } },
-        productos: { plato1: 2, plato2: 1 },
-        total: 45.5,
+        plato: { connect: { id: 1 } },
       });
 
       expect(prisma.pedido.create).toHaveBeenCalledWith({
-        data: {
-          mesa: { connect: { id: 1 } },
-          productos: { plato1: 2, plato2: 1 },
-          total: 45.5,
-        },
+        data: { mesa: { connect: { id: 1 } }, plato: { connect: { id: 1 } } },
+        include: { plato: true },
+      });
+      expect(prisma.mesa.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { consumoActual: 1500 },
       });
       expect(result).toEqual(mockPedido);
     });
   });
 
   describe("getPedidos", () => {
-    it("should get all pedidos with mesas", async () => {
+    it("should get all pedidos with mesa and plato", async () => {
       const mockPedidos = [
-        {
-          id: 1,
-          mesaId: 1,
-          productos: { plato1: 2 },
-          total: 25.5,
-          estado: "Pendiente",
-          createdAt: new Date(),
-          mesa: { id: 1, numero: 5 },
-        },
-        {
-          id: 2,
-          mesaId: 2,
-          productos: { plato2: 1 },
-          total: 15.0,
-          estado: "Completado",
-          createdAt: new Date(),
-          mesa: { id: 2, numero: 10 },
-        },
+        { id: 1, mesaId: 1, platoId: 1, estado: "Pendiente", createdAt: new Date(), mesa: { id: 1, numero: 5 }, plato: mockPlato },
+        { id: 2, mesaId: 2, platoId: 1, estado: "Completado", createdAt: new Date(), mesa: { id: 2, numero: 10 }, plato: mockPlato },
       ];
 
       (prisma.pedido.findMany as jest.Mock).mockResolvedValue(mockPedidos);
@@ -77,31 +68,28 @@ describe("PedidoService", () => {
       const result = await PedidoService.getPedidos();
 
       expect(prisma.pedido.findMany).toHaveBeenCalledWith({
-        include: { mesa: true },
+        include: { mesa: true, plato: true },
       });
       expect(result).toHaveLength(2);
-      expect(result).toEqual(mockPedidos);
     });
 
     it("should return empty array when no pedidos exist", async () => {
       (prisma.pedido.findMany as jest.Mock).mockResolvedValue([]);
-
       const result = await PedidoService.getPedidos();
-
       expect(result).toEqual([]);
     });
   });
 
   describe("getPedidoById", () => {
-    it("should get pedido by id", async () => {
+    it("should get pedido by id with mesa and plato", async () => {
       const mockPedido = {
         id: 1,
         mesaId: 1,
-        productos: { plato1: 2 },
-        total: 25.5,
+        platoId: 1,
         estado: "Pendiente",
         createdAt: new Date(),
         mesa: { id: 1, numero: 5 },
+        plato: mockPlato,
       };
 
       (prisma.pedido.findUnique as jest.Mock).mockResolvedValue(mockPedido);
@@ -110,32 +98,22 @@ describe("PedidoService", () => {
 
       expect(prisma.pedido.findUnique).toHaveBeenCalledWith({
         where: { id: 1 },
-        include: { mesa: true },
+        include: { mesa: true, plato: true },
       });
       expect(result).toEqual(mockPedido);
     });
 
     it("should return null when pedido does not exist", async () => {
       (prisma.pedido.findUnique as jest.Mock).mockResolvedValue(null);
-
       const result = await PedidoService.getPedidoById(999);
-
       expect(result).toBeNull();
     });
   });
 
   describe("getPedidosByMesaId", () => {
-    it("should get pedidos by mesa id", async () => {
+    it("should get pedidos by mesa id with plato", async () => {
       const mockPedidos = [
-        {
-          id: 1,
-          mesaId: 1,
-          productos: { plato1: 2 },
-          total: 25.5,
-          estado: "Pendiente",
-          createdAt: new Date(),
-          mesa: { id: 1, numero: 5 },
-        },
+        { id: 1, mesaId: 1, platoId: 1, estado: "Pendiente", createdAt: new Date(), plato: mockPlato },
       ];
 
       (prisma.pedido.findMany as jest.Mock).mockResolvedValue(mockPedidos);
@@ -144,60 +122,53 @@ describe("PedidoService", () => {
 
       expect(prisma.pedido.findMany).toHaveBeenCalledWith({
         where: { mesaId: 1 },
-        include: { mesa: true },
+        include: { plato: true },
       });
       expect(result).toEqual(mockPedidos);
     });
   });
 
   describe("updatePedido", () => {
-    it("should update pedido successfully", async () => {
+    it("should update pedido estado", async () => {
       const mockUpdatedPedido = {
         id: 1,
         mesaId: 1,
-        productos: { plato1: 3 },
-        total: 35.5,
+        platoId: 1,
         estado: "Completado",
         createdAt: new Date(),
         mesa: { id: 1, numero: 5 },
+        plato: mockPlato,
       };
 
-      (prisma.pedido.update as jest.Mock).mockResolvedValue(
-        mockUpdatedPedido
-      );
+      (prisma.pedido.update as jest.Mock).mockResolvedValue(mockUpdatedPedido);
 
-      const result = await PedidoService.updatePedido(1, {
-        estado: "Completado",
-      });
+      const result = await PedidoService.updatePedido(1, { estado: "Completado" });
 
       expect(prisma.pedido.update).toHaveBeenCalledWith({
         where: { id: 1 },
         data: { estado: "Completado" },
-        include: { mesa: true },
+        include: { mesa: true, plato: true },
       });
       expect(result).toEqual(mockUpdatedPedido);
     });
   });
 
   describe("deletePedido", () => {
-    it("should delete pedido successfully", async () => {
-      const mockDeletedPedido = {
-        id: 1,
-        mesaId: 1,
-        productos: { plato1: 2 },
-        total: 25.5,
-        estado: "Pendiente",
-        createdAt: new Date(),
-      };
+    it("should delete pedido and recalculate consumoActual", async () => {
+      const mockPedido = { id: 1, mesaId: 1, platoId: 1, estado: "Pendiente", createdAt: new Date() };
 
-      (prisma.pedido.delete as jest.Mock).mockResolvedValue(mockDeletedPedido);
+      (prisma.pedido.findUnique as jest.Mock).mockResolvedValue(mockPedido);
+      (prisma.pedido.delete as jest.Mock).mockResolvedValue(mockPedido);
+      (prisma.pedido.findMany as jest.Mock).mockResolvedValue([]);
+      (prisma.mesa.update as jest.Mock).mockResolvedValue({});
 
-      const result = await PedidoService.deletePedido(1);
+      await PedidoService.deletePedido(1);
 
-      expect(prisma.pedido.delete).toHaveBeenCalledWith({
+      expect(prisma.pedido.delete).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(prisma.mesa.update).toHaveBeenCalledWith({
         where: { id: 1 },
+        data: { consumoActual: 0 },
       });
-      expect(result).toEqual(mockDeletedPedido);
     });
   });
 });

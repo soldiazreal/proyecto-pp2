@@ -3,7 +3,6 @@ import { Mesa, Prisma } from "@prisma/client";
 
 export class MesaService {
   static createMesa = async (data: Prisma.MesaCreateInput) => {
-    console.log(data);
     return await prisma.mesa.create({ data });
   };
 
@@ -16,6 +15,12 @@ export class MesaService {
   };
 
   static updateMesa = async (id: Mesa["id"], data: Prisma.MesaUpdateInput) => {
+    if (data.estado === "Disponible") {
+      await prisma.pedido.updateMany({
+        where: { mesaId: id, estado: "Pendiente" },
+        data: { estado: "Completado" },
+      });
+    }
     return await prisma.mesa.update({ where: { id }, data });
   };
 

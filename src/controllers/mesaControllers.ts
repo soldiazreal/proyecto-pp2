@@ -4,11 +4,10 @@ import { MesaService } from "../services/mesaServices";
 export class MesaController {
   static createMesa = async (req: Request, res: Response) => {
     try {
-      const { numero, capacidad, salonId } = req.body;
+      const { numero, capacidad } = req.body;
       const mesa = await MesaService.createMesa({
         numero: Number(numero),
         capacidad: Number(capacidad),
-        salon: { connect: { id: Number(salonId) } },
       });
       res.status(201).json(mesa);
     } catch (error) {
@@ -37,12 +36,41 @@ export class MesaController {
 
   static updateMesa = async (req: Request, res: Response) => {
     try {
-      const { numero, capacidad, salonId } = req.body;
-      const mesa = await MesaService.updateMesa(Number(req.params.id), {
-        numero: Number(numero),
-        capacidad: Number(capacidad),
-        salon: { connect: { id: Number(salonId) } },
-      });
+      const {
+        numero,
+        capacidad,
+        estado,
+        meseroAsignado,
+        horaOcupacion,
+        clientesActuales,
+        duracionEstimada,
+        consumoActual,
+      } = req.body;
+
+      const updateData: any = {};
+
+      if (numero !== undefined) updateData.numero = Number(numero);
+      if (capacidad !== undefined) updateData.capacidad = Number(capacidad);
+      if (estado !== undefined) updateData.estado = estado;
+      if (meseroAsignado !== undefined)
+        updateData.meseroAsignado = meseroAsignado;
+      if (horaOcupacion !== undefined)
+        updateData.horaOcupacion = horaOcupacion
+          ? new Date(horaOcupacion)
+          : null;
+      if (clientesActuales !== undefined)
+        updateData.clientesActuales = Number(clientesActuales);
+      if (duracionEstimada !== undefined)
+        updateData.duracionEstimada = duracionEstimada
+          ? Number(duracionEstimada)
+          : null;
+      if (consumoActual !== undefined)
+        updateData.consumoActual = Number(consumoActual);
+
+      const mesa = await MesaService.updateMesa(
+        Number(req.params.id),
+        updateData
+      );
       res.json(mesa);
     } catch (error) {
       res.status(500).json({ message: "Error al actualizar mesa" });

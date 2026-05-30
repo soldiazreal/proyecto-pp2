@@ -4,11 +4,10 @@ import { PedidoService } from "../services/pedidoServices";
 export class PedidoController {
   static createPedido = async (req: Request, res: Response) => {
     try {
-      const { mesaId, productos, total, estado } = req.body;
+      const { mesaId, platoId, estado } = req.body;
       const pedido = await PedidoService.createPedido({
         mesa: { connect: { id: Number(mesaId) } },
-        productos,
-        total: Number(total),
+        plato: { connect: { id: Number(platoId) } },
         estado: estado || "Pendiente",
       });
       res.status(201).json(pedido);
@@ -50,11 +49,9 @@ export class PedidoController {
 
   static updatePedido = async (req: Request, res: Response) => {
     try {
-      const { estado, productos, total } = req.body;
+      const { estado } = req.body;
       const pedido = await PedidoService.updatePedido(Number(req.params.id), {
         estado,
-        productos,
-        total: total ? Number(total) : undefined,
       });
       res.json(pedido);
     } catch (error) {
