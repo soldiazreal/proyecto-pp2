@@ -10,7 +10,7 @@ export const registrarUsuario = async (email: string, nombre: string, password: 
   if (usuarioExistente) throw new Error('El email ya está registrado');
 
   const passwordHasheada = await bcrypt.hash(password, 10);
-  
+
   const usuario = await prisma.user.create({
     data: { email, nombre, password: passwordHasheada, rol: 'usuario' }
   });
