@@ -28,7 +28,7 @@ export class MesaController {
 
   static getMesaById = async (req: Request, res: Response) => {
     try {
-      const data = matchedData(req); // Extrae el ID ya validado
+      const data = matchedData(req);
       const mesa = await MesaService.getMesaById(data.id);
 
       if (!mesa) return res.status(404).json({ message: "Mesa no encontrada" });
@@ -40,7 +40,6 @@ export class MesaController {
 
   static updateMesa = async (req: Request, res: Response) => {
     try {
-      // Extraemos params (id) y body mezclados y limpios de basura
       const { id, ...updateData } = matchedData(req);
 
       const mesa = await MesaService.updateMesa(id, updateData);
