@@ -41,22 +41,21 @@ model Mesa {
   pedidos  Pedido[]
 }
 
+model Plato {
+  id          Int      @id @default(autoincrement())
+  codigo      String
+  nombre      String
+  descripcion String
+  precio      Float
+  pedidos     Pedido[] // relación inversa, sin FK acá
+}
+
 model Pedido {
   id        Int      @id @default(autoincrement())
   mesa      Mesa     @relation(fields: [mesaId], references: [id])
   mesaId    Int
-  plato     Plato    @relation(fields: [platoId], references: [id])
-  platoId   Int
+  plato     Plato?   @relation(fields: [platoId], references: [id])
+  platoId   Int?     // opcional, se asigna después
   estado    String   @default("Pendiente")
   createdAt DateTime @default(now())
-}
-
-model Plato {
-  id Int @id @default(autoincrement())
-  codigo Int
-  nombre String
-  descripcion String
-  precio Int
-
-  pedidos Pedido[]
 }

@@ -1,17 +1,29 @@
-import { Request, Response } from "express";
+import { json, Request, Response } from "express";
+import { matchedData } from "express-validator";
 import { PedidoService } from "../services/pedidoServices";
+import { MesaService } from "../services/mesaServices";
+import { PlatoService } from "../services/platoServices";
 
 export class PedidoController {
   static createPedido = async (req: Request, res: Response) => {
     try {
-      const { mesaId, platoId, estado } = req.body;
-      const pedido = await PedidoService.createPedido({
-        mesa: { connect: { id: Number(mesaId) } },
-        plato: { connect: { id: Number(platoId) } },
-        estado: estado || "Pendiente",
+      const { mesaId, platoId, estado } = matchedData(req);
+
+      const mesa = await MesaService.getMesaById(mesaId);
+      if (!mesa) return res.status(404).json({ message: "Mesa no encontrada" });
+
+      const plato = await PlatoService.getPlatoById(platoId);
+      if (!plato)
+        return res.status(404).json({ message: "Plato no encontrado" });
+
+      await PedidoService.createPedido({
+        mesa: { connect: { id: mesaId } },
+        plato: { connect: { id: platoId } },
+        estado: estado ?? "Pendiente",
       });
-      res.status(201).json(pedido);
+      res.status(201).json("Pedido creado correctamente");
     } catch (error) {
+      console.log("El famoso", error);
       res.status(500).json({ message: "Error al crear pedido" });
     }
   };
@@ -27,7 +39,8 @@ export class PedidoController {
 
   static getPedidoById = async (req: Request, res: Response) => {
     try {
-      const pedido = await PedidoService.getPedidoById(Number(req.params.id));
+      const { id } = matchedData(req);
+      const pedido = await PedidoService.getPedidoById(id);
       if (!pedido)
         return res.status(404).json({ message: "Pedido no encontrado" });
       res.json(pedido);
@@ -38,9 +51,8 @@ export class PedidoController {
 
   static getPedidosByMesaId = async (req: Request, res: Response) => {
     try {
-      const pedidos = await PedidoService.getPedidosByMesaId(
-        Number(req.params.mesaId)
-      );
+      const { mesaId } = matchedData(req);
+      const pedidos = await PedidoService.getPedidosByMesaId(mesaId);
       res.json(pedidos);
     } catch (error) {
       res.status(500).json({ message: "Error al obtener pedidos de la mesa" });
@@ -49,10 +61,8 @@ export class PedidoController {
 
   static updatePedido = async (req: Request, res: Response) => {
     try {
-      const { estado } = req.body;
-      const pedido = await PedidoService.updatePedido(Number(req.params.id), {
-        estado,
-      });
+      const { id, estado } = matchedData(req);
+      const pedido = await PedidoService.updatePedido(id, { estado });
       res.json(pedido);
     } catch (error) {
       res.status(500).json({ message: "Error al actualizar pedido" });
@@ -61,7 +71,8 @@ export class PedidoController {
 
   static deletePedido = async (req: Request, res: Response) => {
     try {
-      await PedidoService.deletePedido(Number(req.params.id));
+      const { id } = matchedData(req);
+      await PedidoService.deletePedido(id);
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ message: "Error al eliminar pedido" });

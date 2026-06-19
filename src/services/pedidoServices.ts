@@ -7,7 +7,10 @@ export class PedidoService {
       where: { mesaId, estado: "Pendiente" },
       include: { plato: true },
     });
-    const consumoActual = pedidos.reduce((sum, p) => sum + p.plato.precio, 0);
+    const consumoActual = pedidos.reduce(
+      (sum, p) => sum + (p.plato?.precio ?? 0),
+      0,
+    );
     await prisma.mesa.update({
       where: { id: mesaId },
       data: { consumoActual },
@@ -53,7 +56,7 @@ export class PedidoService {
 
   static updatePedido = async (
     id: Pedido["id"],
-    data: Prisma.PedidoUpdateInput
+    data: Prisma.PedidoUpdateInput,
   ) => {
     return await prisma.pedido.update({
       where: { id },

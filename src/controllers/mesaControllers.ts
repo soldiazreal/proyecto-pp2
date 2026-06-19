@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
+import { matchedData } from "express-validator";
 import { MesaService } from "../services/mesaServices";
 
 export class MesaController {
   static createMesa = async (req: Request, res: Response) => {
     try {
-      const { numero, capacidad } = req.body;
-      const mesa = await MesaService.createMesa({
-        numero: Number(numero),
-        capacidad: Number(capacidad),
+      const data = matchedData(req);
+
+      await MesaService.createMesa({
+        numero: data.numero,
+        capacidad: data.capacidad,
       });
-      res.status(201).json(mesa);
+      res.status(201).json({ message: "Mesa creada correctamente." });
     } catch (error) {
       res.status(500).json({ message: "Error al crear mesa" });
     }
@@ -26,7 +28,9 @@ export class MesaController {
 
   static getMesaById = async (req: Request, res: Response) => {
     try {
-      const mesa = await MesaService.getMesaById(Number(req.params.id));
+      const data = matchedData(req); // Extrae el ID ya validado
+      const mesa = await MesaService.getMesaById(data.id);
+
       if (!mesa) return res.status(404).json({ message: "Mesa no encontrada" });
       res.json(mesa);
     } catch (error) {
@@ -36,41 +40,10 @@ export class MesaController {
 
   static updateMesa = async (req: Request, res: Response) => {
     try {
-      const {
-        numero,
-        capacidad,
-        estado,
-        meseroAsignado,
-        horaOcupacion,
-        clientesActuales,
-        duracionEstimada,
-        consumoActual,
-      } = req.body;
+      // Extraemos params (id) y body mezclados y limpios de basura
+      const { id, ...updateData } = matchedData(req);
 
-      const updateData: any = {};
-
-      if (numero !== undefined) updateData.numero = Number(numero);
-      if (capacidad !== undefined) updateData.capacidad = Number(capacidad);
-      if (estado !== undefined) updateData.estado = estado;
-      if (meseroAsignado !== undefined)
-        updateData.meseroAsignado = meseroAsignado;
-      if (horaOcupacion !== undefined)
-        updateData.horaOcupacion = horaOcupacion
-          ? new Date(horaOcupacion)
-          : null;
-      if (clientesActuales !== undefined)
-        updateData.clientesActuales = Number(clientesActuales);
-      if (duracionEstimada !== undefined)
-        updateData.duracionEstimada = duracionEstimada
-          ? Number(duracionEstimada)
-          : null;
-      if (consumoActual !== undefined)
-        updateData.consumoActual = Number(consumoActual);
-
-      const mesa = await MesaService.updateMesa(
-        Number(req.params.id),
-        updateData
-      );
+      const mesa = await MesaService.updateMesa(id, updateData);
       res.json(mesa);
     } catch (error) {
       res.status(500).json({ message: "Error al actualizar mesa" });
@@ -79,8 +52,9 @@ export class MesaController {
 
   static deleteMesa = async (req: Request, res: Response) => {
     try {
-      await MesaService.deleteMesa(Number(req.params.id));
-      res.status(204).send();
+      const data = matchedData(req);
+      await MesaService.deleteMesa(data.id);
+      res.status(204).send({ message: "La mesa ha sido eliminada" });
     } catch (error) {
       res.status(500).json({ message: "Error al eliminar mesa" });
     }
