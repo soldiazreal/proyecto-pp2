@@ -7,11 +7,11 @@ export class MesaController {
     try {
       const data = matchedData(req);
 
-      await MesaService.createMesa({
+      const nuevaMesa = await MesaService.createMesa({
         numero: data.numero,
         capacidad: data.capacidad,
       });
-      res.status(201).json({ message: "Mesa creada correctamente." });
+      res.status(201).json(nuevaMesa);
     } catch (error) {
       res.status(500).json({ message: "Error al crear mesa" });
     }
@@ -65,12 +65,11 @@ export class MesaController {
   static deleteMultipleMesas = async (req: Request, res: Response) => {
     try {
       const { ids } = matchedData(req);
-      const result = await MesaService.deleteMultipleMesas(ids);
+      await MesaService.deleteMultipleMesas(ids);
 
-      if (result)
-        res
-          .status(200)
-          .json({ message: "Se han eliminado las mesas correctamente" });
+      res
+        .status(200)
+        .json({ message: "Se han eliminado las mesas correctamente" });
     } catch (error) {
       res
         .status(500)
