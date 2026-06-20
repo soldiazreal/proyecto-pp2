@@ -32,4 +32,8 @@ export class MesaService {
   static deleteMesa = async (id: Mesa["id"]) => {
     return await prisma.mesa.delete({ where: { id } });
   };
+
+  static deleteMultipleMesas = async (ids: Mesa["id"][]) => {
+    return await prisma.mesa.deleteMany({ where: { id: { in: ids } } });
+  };
 }

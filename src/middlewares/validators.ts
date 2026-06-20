@@ -57,6 +57,15 @@ export const validateUpdateMesa = createValidator([
   body("consumoActual").optional().isFloat({ min: 0 }).toFloat(),
 ]);
 
+export const validateBulkDelete = [
+  body("ids")
+    .isArray({ min: 1 })
+    .withMessage("Debe proporcionar un arreglo de IDs")
+    .custom((ids) => ids.every((id: any) => typeof id === "number"))
+    .withMessage("Todos los IDs deben ser números enteros"),
+  handleInputErrors,
+];
+
 export const validateMesaId = createValidator([mesaIdRule]);
 
 /** Validaciones pedidos */
@@ -94,6 +103,7 @@ export const validateMesaIdParam = createValidator([
 ]);
 
 /** Validaciones platos */
+
 export const validateCreatePlato = createValidator([
   body("nombre")
     .notEmpty()

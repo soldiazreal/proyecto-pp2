@@ -12,6 +12,7 @@ import {
   validateMesaIdParam,
   validateCreatePlato,
   validatePlatoId,
+  validateBulkDelete,
 } from "../middlewares/validators";
 
 const router = Router();
@@ -21,6 +22,11 @@ const router = Router();
 router.get("/mesas", MesaController.getMesas);
 router.get("/mesas/:id", validateMesaId, MesaController.getMesaById);
 router.post("/mesas", validateCreateMesa, MesaController.createMesa);
+router.post(
+  "/mesas/deletemany",
+  validateBulkDelete,
+  MesaController.deleteMultipleMesas,
+);
 router.put("/mesas/:id", validateUpdateMesa, MesaController.updateMesa);
 router.delete("/mesas/:id", validateMesaId, MesaController.deleteMesa);
 

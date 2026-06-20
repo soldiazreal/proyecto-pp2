@@ -20,6 +20,9 @@ export class MesaController {
   static getMesas = async (req: Request, res: Response) => {
     try {
       const mesas = await MesaService.getMesas();
+      if (!mesas)
+        return res.status(400).json({ message: "No se han encontrado mesas" });
+
       res.json(mesas);
     } catch (error) {
       res.status(500).json({ message: "Error al obtener mesas" });
@@ -42,8 +45,8 @@ export class MesaController {
     try {
       const { id, ...updateData } = matchedData(req);
 
-      const mesa = await MesaService.updateMesa(id, updateData);
-      res.json(mesa);
+      MesaService.updateMesa(id, updateData);
+      res.json({ message: "La mesa ha sido actualizada" });
     } catch (error) {
       res.status(500).json({ message: "Error al actualizar mesa" });
     }
@@ -53,9 +56,25 @@ export class MesaController {
     try {
       const data = matchedData(req);
       await MesaService.deleteMesa(data.id);
-      res.status(204).send({ message: "La mesa ha sido eliminada" });
+      res.status(204).json({ message: "La mesa ha sido eliminada" });
     } catch (error) {
       res.status(500).json({ message: "Error al eliminar mesa" });
+    }
+  };
+
+  static deleteMultipleMesas = async (req: Request, res: Response) => {
+    try {
+      const { ids } = matchedData(req);
+      const result = await MesaService.deleteMultipleMesas(ids);
+
+      if (result)
+        res
+          .status(200)
+          .json({ message: "Se han eliminado las mesas correctamente" });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Ha habido un error al eliminar las mesas" });
     }
   };
 }
