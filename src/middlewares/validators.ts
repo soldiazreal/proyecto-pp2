@@ -127,6 +127,26 @@ export const validatePlatoId = createValidator([
   param("id").isInt({ min: 1 }).withMessage("ID de plato inválido").toInt(),
 ]);
 
+export const validateUpdatePlato = createValidator([
+  param("id")
+    .isInt({ min: 1 })
+    .withMessage("ID de plato inválido")
+    .toInt(),
+  body("nombre").optional().isString().trim(),
+  body("precio").optional().isFloat({ min: 0 }).toFloat(),
+  body("descripcion").optional().isString().trim(),
+  body("codigo").optional().isString().trim(),
+]);
+
+export const validateBulkDeletePlatos = [
+  body("ids")
+    .isArray({ min: 1 })
+    .withMessage("Debe proporcionar un arreglo de IDs")
+    .custom((ids) => ids.every((id: any) => typeof id === "number"))
+    .withMessage("Todos los IDs deben ser números enteros"),
+  handleInputErrors,
+];
+
 // ─── Usuarios ────────────────────────────────────────────────────────────────
 
 export const validateRegistro = createValidator([
