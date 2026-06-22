@@ -12,7 +12,9 @@ import {
   validateMesaIdParam,
   validateCreatePlato,
   validatePlatoId,
+  validateUpdatePlato,
   validateBulkDelete,
+  validateBulkDeletePlatos,
 } from "../middlewares/validators";
 
 const router = Router();
@@ -48,5 +50,12 @@ router.delete("/pedidos/:id", validatePedidoId, PedidoController.deletePedido);
 router.get("/platos", PlatoController.getPlatos);
 router.get("/platos/:id", validatePlatoId, PlatoController.getPlatoById);
 router.post("/platos", validateCreatePlato, PlatoController.createPlato);
+router.put("/platos/:id", validateUpdatePlato, PlatoController.updatePlato);
+router.delete("/platos/:id", validatePlatoId, PlatoController.deletePlato);
+router.post(
+  "/platos/deletemany",
+  validateBulkDeletePlatos,
+  PlatoController.deleteMultiplePlatos,
+);
 
 export default router;
