@@ -40,4 +40,39 @@ export class PlatoController {
       res.status(500).json({ message: "Error al obtener platos" });
     }
   };
+    static updatePlato = async (req: Request, res: Response) => {
+    try {
+      const { id, ...updateData } = matchedData(req);
+
+      await PlatoService.updatePlato(id, updateData);
+      res.json({ message: "El plato ha sido actualizado" });
+    } catch (error) {
+      res.status(500).json({ message: "Error al actualizar plato" });
+    }
+  };
+
+  static deletePlato = async (req: Request, res: Response) => {
+    try {
+      const { id } = matchedData(req);
+      await PlatoService.deletePlato(id);
+      res.status(204).json({ message: "El plato ha sido eliminado" });
+    } catch (error) {
+      res.status(500).json({ message: "Error al eliminar plato" });
+    }
+  };
+
+  static deleteMultiplePlatos = async (req: Request, res: Response) => {
+    try {
+      const { ids } = matchedData(req);
+      await PlatoService.deleteMultiplePlatos(ids);
+
+      res
+        .status(200)
+        .json({ message: "Se han eliminado los platos correctamente" });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Ha habido un error al eliminar los platos" });
+    }
+  };
 }
