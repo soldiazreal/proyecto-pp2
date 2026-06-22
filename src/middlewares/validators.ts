@@ -61,7 +61,7 @@ export const validateBulkDelete = [
   body("ids")
     .isArray({ min: 1 })
     .withMessage("Debe proporcionar un arreglo de IDs")
-    .custom((ids) => ids.every((id: any) => typeof id === "number"))
+    .custom((ids:any) => ids.every((id: any) => typeof id === "number"))
     .withMessage("Todos los IDs deben ser números enteros"),
   handleInputErrors,
 ];
@@ -142,7 +142,7 @@ export const validateBulkDeletePlatos = [
   body("ids")
     .isArray({ min: 1 })
     .withMessage("Debe proporcionar un arreglo de IDs")
-    .custom((ids) => ids.every((id: any) => typeof id === "number"))
+    .custom((ids:any) => ids.every((id: any) => typeof id === "number"))
     .withMessage("Todos los IDs deben ser números enteros"),
   handleInputErrors,
 ];
