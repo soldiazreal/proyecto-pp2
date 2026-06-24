@@ -50,7 +50,9 @@ describe("MesaService", () => {
 
       const result = await MesaService.getMesas();
 
-      expect(prisma.mesa.findMany).toHaveBeenCalled();
+      expect(prisma.mesa.findMany).toHaveBeenCalledWith({
+        include: { pedidos: { include: { plato: true } } },
+      });
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(mockMesa);
     });
@@ -70,7 +72,10 @@ describe("MesaService", () => {
 
       const result = await MesaService.getMesaById(1);
 
-      expect(prisma.mesa.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(prisma.mesa.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+        include: { pedidos: { include: { plato: true } } },
+      });
       expect(result).toEqual(mockMesa);
     });
 

@@ -29,7 +29,7 @@ describe("PlatoService", () => {
     it("should create a plato", async () => {
       (prisma.plato.create as jest.Mock).mockResolvedValue(mockPlato);
 
-      const data = { codigo: 101, nombre: "Milanesa", descripcion: "Con papas fritas", precio: 1500 };
+      const data = { codigo: "101", nombre: "Milanesa", descripcion: "Con papas fritas", precio: 1500 };
       const result = await PlatoService.createPlato(data);
 
       expect(prisma.plato.create).toHaveBeenCalledWith({ data });
@@ -63,7 +63,10 @@ describe("PlatoService", () => {
 
       const result = await PlatoService.getPlatoById(1);
 
-      expect(prisma.plato.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(prisma.plato.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+        include: { pedidos: true },
+      });
       expect(result).toEqual(mockPlato);
     });
 

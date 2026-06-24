@@ -111,16 +111,19 @@ export const validateCreatePlato = createValidator([
     .isString()
     .trim(),
   body("precio")
-    .isFloat({ min: 0 })
+    .notEmpty()
+    .withMessage("El precio es obligatorio")
+    .isNumeric()
     .withMessage("El precio debe ser un número positivo")
-    .toFloat(),
+    .customSanitizer(val => parseFloat(val))
+    .custom(val => val >= 0)
+    .withMessage("El precio no puede ser negativo"),
   body("descripcion").optional().isString().trim(),
   body("codigo")
     .notEmpty()
     .withMessage("El código es obligatorio")
-    .isInt({ min: 1 })
-    .withMessage("El código debe ser un entero positivo")
-    .toInt(),
+    .isString()
+    .trim(),
 ]);
 
 export const validatePlatoId = createValidator([
@@ -133,7 +136,13 @@ export const validateUpdatePlato = createValidator([
     .withMessage("ID de plato inválido")
     .toInt(),
   body("nombre").optional().isString().trim(),
-  body("precio").optional().isFloat({ min: 0 }).toFloat(),
+  body("precio")
+    .optional()
+    .isNumeric()
+    .withMessage("El precio debe ser un número positivo")
+    .customSanitizer(val => parseFloat(val))
+    .custom(val => val >= 0)
+    .withMessage("El precio no puede ser negativo"),
   body("descripcion").optional().isString().trim(),
   body("codigo").optional().isString().trim(),
 ]);
