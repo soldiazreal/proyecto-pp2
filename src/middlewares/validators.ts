@@ -115,7 +115,7 @@ export const validateCreatePlato = createValidator([
     .withMessage("El precio es obligatorio")
     .isNumeric()
     .withMessage("El precio debe ser un número positivo")
-    .customSanitizer(val => parseFloat(val))
+    .toFloat()
     .custom(val => val >= 0)
     .withMessage("El precio no puede ser negativo"),
   body("descripcion").optional().isString().trim(),
@@ -140,9 +140,7 @@ export const validateUpdatePlato = createValidator([
     .optional()
     .isNumeric()
     .withMessage("El precio debe ser un número positivo")
-    .customSanitizer(val => parseFloat(val))
-    .custom(val => val >= 0)
-    .withMessage("El precio no puede ser negativo"),
+    .toFloat(),
   body("descripcion").optional().isString().trim(),
   body("codigo").optional().isString().trim(),
 ]);
