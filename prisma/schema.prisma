@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  //output   = "../src/generated"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
+  nombre    String
+  password  String
+  rol       String  @default("usuario")
+  activo    Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Mesa {
+  id                Int       @id @default(autoincrement())
+  numero            Int
+  capacidad         Int?
+  estado            String    @default("Disponible")
+  clientesActuales  Int       @default(0)
+  meseroAsignado    String?
+  horaOcupacion     DateTime?
+  duracionEstimada  Int?
+  consumoActual     Float     @default(0)
+  fechaCreacion     DateTime  @default(now())
+  fechaModificacion DateTime  @updatedAt
+
+  pedidos  Pedido[]
+}
+
+model Plato {
+  id          Int      @id @default(autoincrement())
+  codigo      String   @unique
+  nombre      String
+  descripcion String?
+  precio      Float
+  pedidos     Pedido[] // relación inversa, sin FK acá
+  sinGluten   Boolean @default(false)
+  disponible  Boolean @default(true)
+}
+
+model Pedido {
+  id        Int      @id @default(autoincrement())
+  mesa      Mesa     @relation(fields: [mesaId], references: [id])
+  mesaId    Int
+  plato     Plato?   @relation(fields: [platoId], references: [id])
+  platoId   Int?     // opcional, se asigna después
+  estado    String   @default("Pendiente")
+  createdAt DateTime @default(now())
+}

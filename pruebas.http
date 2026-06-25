@@ -1,17 +1,33 @@
-### Probar el GET de pedidos
-GET http://localhost:3000/pedidos
+### =========================================
+### API PLATOS - Backend Prisma + PostgreSQL
+### Probando endpoints creados con:
+### Express + Controller + Service + Prisma
+### =========================================
+
+
+### Obtener todos los platos
+GET http://localhost:1500/api/platos
 
 ###
 
-### Probar el POST (Hacer un pedido)
-POST http://localhost:3000/pedidos
+
+### Obtener un plato por ID
+GET http://localhost:1500/api/platos/1
+
+###
+
+
+### Crear un nuevo plato
+POST http://localhost:1500/api/platos
 Content-Type: application/json
 
 {
-    "mesa": 10,
-    "producto": "Empanadas",
-    "cantidad": 3
+  "codigo": "BEB99",
+  "nombre": "Cerveza Bien Fría",
+  "descripcion": "Cerveza rubia helada servida en vaso congelado",
+  "categoria": "BEBIDA",
+  "precio": 4200,
+  "tiempoPreparacion": 2
 }
 
-### Consultar el stock disponible
-GET http://localhost:3000/pedidos/stock
+###
