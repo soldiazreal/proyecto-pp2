@@ -25,29 +25,39 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+enum EstadoMesa {
+  Disponible
+  Ocupada
+  Reservada
+  Mantenimiento
+}
+
 model Mesa {
-  id                Int       @id @default(autoincrement())
-  numero            Int
+  id                Int           @id @default(autoincrement())
+  numero            Int           @unique
   capacidad         Int?
-  estado            String    @default("Disponible")
-  clientesActuales  Int       @default(0)
+  estado            EstadoMesa    @default(Disponible)
+  clientesActuales  Int           @default(0)
   meseroAsignado    String?
   horaOcupacion     DateTime?
   duracionEstimada  Int?
-  consumoActual     Float     @default(0)
-  fechaCreacion     DateTime  @default(now())
-  fechaModificacion DateTime  @updatedAt
+  consumoActual     Float         @default(0)
+  fechaCreacion     DateTime      @default(now())
+  fechaModificacion DateTime      @updatedAt
 
   pedidos  Pedido[]
 }
 
 model Plato {
-  id          Int      @id @default(autoincrement())
-  codigo      String
-  nombre      String
-  descripcion String
-  precio      Float
-  pedidos     Pedido[] // relación inversa, sin FK acá
+  id                Int       @id @default(autoincrement())
+  codigo            String
+  nombre            String
+  descripcion       String
+  precio            Float
+  sinGluten         Boolean   @default(true)
+  disponible        Boolean   @default(true)
+
+  pedidos           Pedido[] // relación inversa, sin FK acá
 }
 
 model Pedido {

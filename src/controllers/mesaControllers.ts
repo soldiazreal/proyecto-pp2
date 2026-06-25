@@ -41,11 +41,11 @@ export class MesaController {
     }
   };
 
-  static updateMesa = async (req: Request, res: Response) => {
+  static updateMesaState = async (req: Request, res: Response) => {
     try {
       const { id, ...updateData } = matchedData(req);
-
-      MesaService.updateMesa(id, updateData);
+      // console.log("llegando hasta aca");
+      MesaService.updateMesaState(id, updateData);
       res.json({ message: "La mesa ha sido actualizada" });
     } catch (error) {
       res.status(500).json({ message: "Error al actualizar mesa" });

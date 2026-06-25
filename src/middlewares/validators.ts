@@ -21,6 +21,13 @@ const createValidator = (rules: ValidationChain[]): RequestHandler[] => [
 
 /** Validaciones mesas */
 
+export const ESTADOS_MESA = [
+  "Disponible",
+  "Ocupada",
+  "Reservada",
+  "Mantenimiento",
+];
+
 const mesaIdRule = param("id")
   .isInt({ min: 1 })
   .withMessage("El ID de la mesa debe ser un entero válido")
@@ -43,18 +50,21 @@ export const validateCreateMesa = createValidator([
 
 export const validateUpdateMesa = createValidator([
   mesaIdRule,
-  body("numero").optional().isInt({ min: 1 }).toInt(),
-  body("capacidad").optional().isInt({ min: 1 }).toInt(),
-  body("estado").optional().isString().notEmpty(),
+  // body("numero").optional().isInt({ min: 1 }).toInt(),
+  // body("capacidad").optional().isInt({ min: 1 }).toInt(),
+  body("estado")
+    .notEmpty()
+    .isIn(ESTADOS_MESA)
+    .withMessage("Estado de mesa incorrecto"),
   body("meseroAsignado").optional().isString(),
   body("horaOcupacion")
     .optional()
     .isISO8601()
     .toDate()
     .withMessage("Formato de fecha inválido"),
-  body("clientesActuales").optional().isInt({ min: 0 }).toInt(),
-  body("duracionEstimada").optional().isInt({ min: 1 }).toInt(),
-  body("consumoActual").optional().isFloat({ min: 0 }).toFloat(),
+  // body("clientesActuales").optional().isInt({ min: 0 }).toInt(),
+  // body("duracionEstimada").optional().isInt({ min: 1 }).toInt(),
+  // body("consumoActual").optional().isFloat({ min: 0 }).toFloat(),
 ]);
 
 export const validateBulkDelete = [
@@ -121,6 +131,8 @@ export const validateCreatePlato = createValidator([
     .isInt({ min: 1 })
     .withMessage("El código debe ser un entero positivo")
     .toInt(),
+  body("sinGluten").optional().default(true),
+  body("disponible").optional().default(true),
 ]);
 
 export const validatePlatoId = createValidator([
