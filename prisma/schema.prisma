@@ -43,11 +43,13 @@ model Mesa {
 
 model Plato {
   id          Int      @id @default(autoincrement())
-  codigo      String
+  codigo      String   @unique
   nombre      String
-  descripcion String
+  descripcion String?
   precio      Float
   pedidos     Pedido[] // relación inversa, sin FK acá
+  sinGluten   Boolean @default(false)
+  disponible  Boolean @default(true)
 }
 
 model Pedido {

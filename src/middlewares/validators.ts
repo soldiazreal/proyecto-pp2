@@ -119,11 +119,22 @@ export const validateCreatePlato = createValidator([
     .custom(val => val >= 0)
     .withMessage("El precio no puede ser negativo"),
   body("descripcion").optional().isString().trim(),
+  
   body("codigo")
     .notEmpty()
     .withMessage("El código es obligatorio")
     .isString()
     .trim(),
+
+  body("sinGluten")
+    .optional()
+    .isBoolean()
+    .toBoolean(),
+
+  body("disponible")
+    .optional()
+    .isBoolean()
+    .toBoolean(),
 ]);
 
 export const validatePlatoId = createValidator([

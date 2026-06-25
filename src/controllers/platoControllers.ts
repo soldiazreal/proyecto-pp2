@@ -11,6 +11,8 @@ export class PlatoController {
         codigo: data.codigo,
         descripcion: data.descripcion,
         precio: data.precio,
+        sinGluten: data.sinGluten,
+        disponible: data.disponible,
       });
       res.status(201).json({ message: "Plato creado correctamente" });
     } catch (error) {
