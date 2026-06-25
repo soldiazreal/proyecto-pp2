@@ -29,7 +29,7 @@ router.post(
   validateBulkDelete,
   MesaController.deleteMultipleMesas,
 );
-router.put("/mesas/:id", validateUpdateMesa, MesaController.updateMesa);
+router.patch("/mesas/:id", validateUpdateMesa, MesaController.updateMesaState);
 router.delete("/mesas/:id", validateMesaId, MesaController.deleteMesa);
 
 /** PEDIDOS */

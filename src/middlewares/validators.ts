@@ -21,6 +21,13 @@ const createValidator = (rules: ValidationChain[]): RequestHandler[] => [
 
 /** Validaciones mesas */
 
+export const ESTADOS_MESA = [
+  "Disponible",
+  "Ocupada",
+  "Reservada",
+  "Mantenimiento",
+];
+
 const mesaIdRule = param("id")
   .isInt({ min: 1 })
   .withMessage("El ID de la mesa debe ser un entero válido")
@@ -43,25 +50,28 @@ export const validateCreateMesa = createValidator([
 
 export const validateUpdateMesa = createValidator([
   mesaIdRule,
-  body("numero").optional().isInt({ min: 1 }).toInt(),
-  body("capacidad").optional().isInt({ min: 1 }).toInt(),
-  body("estado").optional().isString().notEmpty(),
+  // body("numero").optional().isInt({ min: 1 }).toInt(),
+  // body("capacidad").optional().isInt({ min: 1 }).toInt(),
+  body("estado")
+    .notEmpty()
+    .isIn(ESTADOS_MESA)
+    .withMessage("Estado de mesa incorrecto"),
   body("meseroAsignado").optional().isString(),
   body("horaOcupacion")
     .optional()
     .isISO8601()
     .toDate()
     .withMessage("Formato de fecha inválido"),
-  body("clientesActuales").optional().isInt({ min: 0 }).toInt(),
-  body("duracionEstimada").optional().isInt({ min: 1 }).toInt(),
-  body("consumoActual").optional().isFloat({ min: 0 }).toFloat(),
+  // body("clientesActuales").optional().isInt({ min: 0 }).toInt(),
+  // body("duracionEstimada").optional().isInt({ min: 1 }).toInt(),
+  // body("consumoActual").optional().isFloat({ min: 0 }).toFloat(),
 ]);
 
 export const validateBulkDelete = [
   body("ids")
     .isArray({ min: 1 })
     .withMessage("Debe proporcionar un arreglo de IDs")
-    .custom((ids:any) => ids.every((id: any) => typeof id === "number"))
+    .custom((ids: any) => ids.every((id: any) => typeof id === "number"))
     .withMessage("Todos los IDs deben ser números enteros"),
   handleInputErrors,
 ];
@@ -116,25 +126,18 @@ export const validateCreatePlato = createValidator([
     .isNumeric()
     .withMessage("El precio debe ser un número positivo")
     .toFloat()
-    .custom(val => val >= 0)
+    .custom((val) => val >= 0)
     .withMessage("El precio no puede ser negativo"),
   body("descripcion").optional().isString().trim(),
-  
+
   body("codigo")
     .notEmpty()
     .withMessage("El código es obligatorio")
-    .isString()
-    .trim(),
-
-  body("sinGluten")
-    .optional()
-    .isBoolean()
-    .toBoolean(),
-
-  body("disponible")
-    .optional()
-    .isBoolean()
-    .toBoolean(),
+    .isInt({ min: 1 })
+    .withMessage("El código debe ser un entero positivo")
+    .toInt(),
+  body("sinGluten").optional().default(true),
+  body("disponible").optional().default(true),
 ]);
 
 export const validatePlatoId = createValidator([
@@ -142,10 +145,7 @@ export const validatePlatoId = createValidator([
 ]);
 
 export const validateUpdatePlato = createValidator([
-  param("id")
-    .isInt({ min: 1 })
-    .withMessage("ID de plato inválido")
-    .toInt(),
+  param("id").isInt({ min: 1 }).withMessage("ID de plato inválido").toInt(),
   body("nombre").optional().isString().trim(),
   body("precio")
     .optional()
@@ -160,7 +160,7 @@ export const validateBulkDeletePlatos = [
   body("ids")
     .isArray({ min: 1 })
     .withMessage("Debe proporcionar un arreglo de IDs")
-    .custom((ids:any) => ids.every((id: any) => typeof id === "number"))
+    .custom((ids: any) => ids.every((id: any) => typeof id === "number"))
     .withMessage("Todos los IDs deben ser números enteros"),
   handleInputErrors,
 ];
