@@ -47,8 +47,11 @@ export class PedidoService {
 
   static getPedidosByMesaId = async (mesaId: Mesa["id"]) => {
     return await prisma.pedido.findMany({
-      where: { mesaId },
+      where: {
+        mesaId: mesaId,
+      },
       include: {
+        mesa: true,
         plato: true,
       },
     });

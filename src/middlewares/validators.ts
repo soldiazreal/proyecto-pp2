@@ -50,8 +50,6 @@ export const validateCreateMesa = createValidator([
 
 export const validateUpdateMesa = createValidator([
   mesaIdRule,
-  // body("numero").optional().isInt({ min: 1 }).toInt(),
-  // body("capacidad").optional().isInt({ min: 1 }).toInt(),
   body("estado")
     .notEmpty()
     .isIn(ESTADOS_MESA)
@@ -62,9 +60,6 @@ export const validateUpdateMesa = createValidator([
     .isISO8601()
     .toDate()
     .withMessage("Formato de fecha inválido"),
-  // body("clientesActuales").optional().isInt({ min: 0 }).toInt(),
-  // body("duracionEstimada").optional().isInt({ min: 1 }).toInt(),
-  // body("consumoActual").optional().isFloat({ min: 0 }).toFloat(),
 ]);
 
 export const validateBulkDelete = [
@@ -129,7 +124,6 @@ export const validateCreatePlato = createValidator([
     .custom((val) => val >= 0)
     .withMessage("El precio no puede ser negativo"),
   body("descripcion").optional().isString().trim(),
-
   body("codigo")
     .notEmpty()
     .withMessage("El código es obligatorio")

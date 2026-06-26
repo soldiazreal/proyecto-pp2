@@ -6,6 +6,7 @@ export class PlatoController {
   static createPlato = async (req: Request, res: Response) => {
     try {
       const data = matchedData(req);
+
       await PlatoService.createPlato({
         nombre: data.nombre,
         codigo: data.codigo,
@@ -42,7 +43,7 @@ export class PlatoController {
       res.status(500).json({ message: "Error al obtener platos" });
     }
   };
-    static updatePlato = async (req: Request, res: Response) => {
+  static updatePlato = async (req: Request, res: Response) => {
     try {
       const { id, ...updateData } = matchedData(req);
 

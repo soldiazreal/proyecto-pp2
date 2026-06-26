@@ -53,6 +53,7 @@ export class PedidoController {
     try {
       const { mesaId } = matchedData(req);
       const pedidos = await PedidoService.getPedidosByMesaId(mesaId);
+
       res.json(pedidos);
     } catch (error) {
       res.status(500).json({ message: "Error al obtener pedidos de la mesa" });
