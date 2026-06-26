@@ -12,16 +12,14 @@ export class PedidoController {
       const mesa = await MesaService.getMesaById(mesaId);
       if (!mesa) return res.status(404).json({ message: "Mesa no encontrada" });
 
-      const plato = await PlatoService.getPlatoById(platoId);
-      if (!plato)
-        return res.status(404).json({ message: "Plato no encontrado" });
+      const platosParaConectar = platoId.map((id: number) => ({ id: id }));
 
-      await PedidoService.createPedido({
+      const nuevoPedido = await PedidoService.createPedido({
         mesa: { connect: { id: mesaId } },
-        plato: { connect: { id: platoId } },
+        platos: { connect: platosParaConectar },
         estado: estado ?? "Pendiente",
       });
-      res.status(201).json("Pedido creado correctamente");
+      res.status(201).json(nuevoPedido);
     } catch (error) {
       console.log("El famoso", error);
       res.status(500).json({ message: "Error al crear pedido" });
@@ -56,6 +54,7 @@ export class PedidoController {
 
       res.json(pedidos);
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: "Error al obtener pedidos de la mesa" });
     }
   };

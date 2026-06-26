@@ -8,14 +8,18 @@ export class MesaService {
 
   static getMesas = async () => {
     return await prisma.mesa.findMany({
-      include: { pedidos: { include: { plato: true } } },
+      include: {
+        pedidos: { include: { platos: true } },
+      },
     });
   };
 
   static getMesaById = async (id: Mesa["id"]) => {
     return await prisma.mesa.findUnique({
       where: { id },
-      include: { pedidos: { include: { plato: true } } },
+      include: {
+        pedidos: { include: { platos: true } },
+      },
     });
   };
 

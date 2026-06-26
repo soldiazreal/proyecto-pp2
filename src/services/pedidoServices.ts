@@ -2,28 +2,26 @@ import prisma from "../lib/prisma";
 import { Pedido, Prisma, Mesa } from "@prisma/client";
 
 export class PedidoService {
-  private static recalcularConsumoActual = async (mesaId: number) => {
-    const pedidos = await prisma.pedido.findMany({
-      where: { mesaId, estado: "Pendiente" },
-      include: { plato: true },
-    });
-    const consumoActual = pedidos.reduce(
-      (sum, p) => sum + (p.plato?.precio ?? 0),
-      0,
-    );
-    await prisma.mesa.update({
-      where: { id: mesaId },
-      data: { consumoActual },
-    });
-  };
+  // private static recalcularConsumoActual = async (mesaId: number) => {
+  //   const pedidos = await prisma.pedido.findMany({
+  //     where: { mesaId, estado: "Pendiente" },
+  //     include: { platos: true },
+  //   });
+  //   const consumoActual = pedidos.reduce((sum, p) => sum + (p.precio ?? 0), 0);
+  //   await prisma.mesa.update({
+  //     where: { id: mesaId },
+  //     data: { consumoActual },
+  //   });
+  // };
 
   static createPedido = async (data: Prisma.PedidoCreateInput) => {
-    const pedido = await prisma.pedido.create({
+    // const pedido =
+    return await prisma.pedido.create({
       data,
-      include: { plato: true },
+      // include: { platos: true },
     });
-    await PedidoService.recalcularConsumoActual(pedido.mesaId);
-    return pedido;
+    // await PedidoService.recalcularConsumoActual(pedido.mesaId);
+    // return pedido;
   };
 
   static getPedidos = async () => {
@@ -52,7 +50,7 @@ export class PedidoService {
       },
       include: {
         mesa: true,
-        plato: true,
+        platos: true,
       },
     });
   };
@@ -74,6 +72,6 @@ export class PedidoService {
   static deletePedido = async (id: Pedido["id"]) => {
     const pedido = await prisma.pedido.findUnique({ where: { id } });
     await prisma.pedido.delete({ where: { id } });
-    if (pedido) await PedidoService.recalcularConsumoActual(pedido.mesaId);
+    // if (pedido) await PedidoService.recalcularConsumoActual(pedido.mesaId);
   };
 }

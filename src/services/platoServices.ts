@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma";
-import { Plato, Prisma } from "@prisma/client";
+import { Mesa, Plato, Prisma } from "@prisma/client";
 
 export class PlatoService {
   static createPlato = async (data: Prisma.PlatoCreateInput) => {
@@ -9,17 +9,21 @@ export class PlatoService {
   static getPlatoById = async (id: Plato["id"]) => {
     return await prisma.plato.findUnique({
       where: { id },
-      include: { pedidos: true },
     });
+  };
+
+  static getManyPlatosByMesa = async (MesaId: Mesa["id"]) => {
+    return await prisma.plato.findMany({ where: { id: MesaId } });
   };
 
   static getPlatos = async () => {
-    return await prisma.plato.findMany({
-      include: { pedidos: true },
-    });
+    return await prisma.plato.findMany({});
   };
 
-  static updatePlato = async (id: Plato["id"], data: Prisma.PlatoUpdateInput) => {
+  static updatePlato = async (
+    id: Plato["id"],
+    data: Prisma.PlatoUpdateInput,
+  ) => {
     return await prisma.plato.update({ where: { id }, data });
   };
 

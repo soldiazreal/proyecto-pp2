@@ -42,17 +42,16 @@ model Plato {
   precio      Float
   disponible  Boolean  @default(true)
   sinGluten   Boolean  @default(true)
-  pedidos     Pedido[]
+  pedidos     Pedido[] 
 }
 
 model Pedido {
-  id        Int      @id @default(autoincrement())
-  estado    String   @default("Pendiente")
-  createdAt DateTime @default(now())
-  mesaId    Int
-  platoId   Int?
-  mesa      Mesa     @relation(fields: [mesaId], references: [id])
-  plato     Plato?   @relation(fields: [platoId], references: [id])
+  id          Int      @id @default(autoincrement())
+  estado      String   @default("Pendiente")
+  createdAt   DateTime @default(now())
+  mesaId      Int
+  mesa        Mesa     @relation(fields: [mesaId], references: [id])
+  platos      Plato[]  
 }
 
 enum EstadoMesa {

@@ -88,7 +88,7 @@ export const validateCreatePedido = createValidator([
   body("platoId")
     .isInt({ min: 1 })
     .withMessage("platoId debe ser un número entero válido")
-    .toInt(),
+    .isArray({ min: 1 }),
   body("estado").optional().isString().trim(),
 ]);
 
